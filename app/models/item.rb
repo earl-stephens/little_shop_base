@@ -47,4 +47,13 @@ class Item < ApplicationRecord
       .where(fulfilled: true, orders: {status: :completed}, item_id: self.id)
       .count > 0
   end
+
+  def self.only_default_pics
+    Item.where(image: "https://picsum.photos/200/300/?image=524")
+  end
+
+  def self.no_default_pics_present?
+    # binding.pry
+    Item.where(image: "https://picsum.photos/200/300/?image=524").count == 0
+  end
 end

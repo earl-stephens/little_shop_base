@@ -400,3 +400,66 @@ RSpec.describe 'Merchant Dashboard Items page' do
     end
   end
 end
+
+describe 'when logged in as a merchant' do
+  it 'checks for default image' do
+    merchant = create(:merchant)
+    admin = create(:admin)
+
+    items = create(:item, user: merchant)
+    item_default_pic = create(:item, user: merchant, image: "https://picsum.photos/200/300/?image=524")
+
+    order = create(:completed_order)
+
+    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
+    @am_admin = false
+
+    visit dashboard_items_path
+
+    within "#item-#{item_default_pic.id}" do
+      expect(page).to have_content("ID: #{item_default_pic.id}")
+      expect(page).to have_content("Name: #{item_default_pic.name}")
+      expect(page.find("#item-#{item_default_pic.id}-image")['src']).to have_content(item_default_pic.image)
+      expect(page).to have_content("Price: #{number_to_currency(item_default_pic.price)}")
+      expect(page).to have_content("Inventory: #{item_default_pic.inventory}")
+    end
+    within ".merch_to_do" do
+      expect(page).to have_content("To Do List")
+    end
+
+    within ".default_pic_present" do
+      expect(page).to have_content("Items with a placeholder image:")
+      click_on "Edit this item"
+      expect(current_path).to eq(edit_dashboard_item_path(item_default_pic))
+
+    end
+  end
+
+  it 'checks for default image sad path' do
+    merchant = create(:merchant)
+    admin = create(:admin)
+
+    item_1 = create(:item, user: merchant)
+    item_2 = create(:item, user: merchant)
+
+    order = create(:completed_order)
+
+    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
+    @am_admin = false
+
+    visit dashboard_items_path
+
+    within "#item-#{item_1.id}" do
+      expect(page).to have_content("ID: #{item_1.id}")
+      expect(page).to have_content("Name: #{item_1.name}")
+      expect(page.find("#item-#{item_1.id}-image")['src']).to have_content(item_1.image)
+      expect(page).to have_content("Price: #{number_to_currency(item_1.price)}")
+      expect(page).to have_content("Inventory: #{item_1.inventory}")
+    end
+    within ".merch_to_do" do
+      expect(page).to have_content("To Do List")
+
+      expect(page).to_not have_content("Items with a placeholder image:")
+    end
+  end
+end

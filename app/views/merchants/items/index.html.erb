@@ -11,3 +11,17 @@
   <%= render partial: "/merchants/items/item_card", locals: {item: item, img_width: 200} %>
   <% end %>
 <% end %>
+
+<section class="merch_to_do">
+  <h3>To Do List</h3>
+  <% if @no_default_pics_present == false %>
+  <section class="default_pic_present">
+      <h2>Items with a placeholder image:</h2>
+      <% @no_pic_items.each do |item| %>
+        <ul>
+          <li>The item is: <%= item.name %> and it can be edited here: <%= link_to "Edit this item", edit_dashboard_item_path(item) %></li>
+        </ul>
+      <% end %>
+    </section>
+  <% end %>
+</section>

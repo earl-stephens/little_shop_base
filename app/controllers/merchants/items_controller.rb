@@ -3,6 +3,9 @@ class Merchants::ItemsController < ApplicationController
 
   def index
     @items = Item.where(user: current_user)
+    # binding.pry
+    @no_default_pics_present = Item.no_default_pics_present?
+    @no_pic_items = Item.only_default_pics
   end
 
   def enable

@@ -47,6 +47,34 @@ RSpec.describe Item, type: :model do
         expect(actual[0].total_ordered).to eq(1)
       end
     end
+    it ".only_default_pics" do
+      merchant = create(:merchant)
+      item_1 = create(:item, user: merchant)
+      item_2 = create(:item, user: merchant)
+      item_3 = create(:item, user: merchant, image: "https://picsum.photos/200/300/?image=524")
+      item_4 = create(:item, user: merchant, image: "https://picsum.photos/200/300/?image=524")
+
+      expect(Item.only_default_pics).to eq([item_3, item_4])
+      expect(Item.only_default_pics).to_not eq([item_1, item_2])
+    end
+
+    it ".default_pics_present?" do
+      merchant = create(:merchant)
+      item_1 = create(:item, user: merchant)
+      item_2 = create(:item, user: merchant)
+
+      expect(Item.no_default_pics_present?).to eq(true)
+    end
+    it ".default_pics_present? sad path" do
+      merchant = create(:merchant)
+      item_1 = create(:item, user: merchant)
+      item_2 = create(:item, user: merchant)
+      item_3 = create(:item, user: merchant, image: "https://picsum.photos/200/300/?image=524")
+      item_4 = create(:item, user: merchant, image: "https://picsum.photos/200/300/?image=524")
+
+      expect(Item.no_default_pics_present?).to eq(false)
+    end
+
   end
 
   describe 'instance methods' do
