@@ -6,6 +6,8 @@ class Merchants::ItemsController < ApplicationController
     # binding.pry
     @no_default_pics_present = Item.no_default_pics_present?
     @no_pic_items = Item.only_default_pics
+    @num_unfulfilled_orders = OrderItem.number_of_unfulfilled_orders
+    @impact_on_revenue = OrderItem.revenue_impact
   end
 
   def enable

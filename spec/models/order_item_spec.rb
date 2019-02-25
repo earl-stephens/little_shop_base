@@ -59,4 +59,23 @@ RSpec.describe OrderItem, type: :model do
       expect(item.inventory).to eq(0)
     end
   end
+
+  describe "class methods" do
+    it ".number_of_unfulfilled_orders" do
+      item = create(:item, inventory:2)
+      oi1 = create(:order_item, quantity: 1, item: item)
+      oi2 = create(:order_item, quantity: 2, item: item)
+      oi3 = create(:order_item, quantity: 3, item: item)
+      expect(OrderItem.number_of_unfulfilled_orders).to eq(3)
+    end
+
+    it ".revenue_impact" do
+      item = create(:item, inventory:2)
+      oi1 = create(:order_item, quantity: 1, item: item, price: 2)
+      oi2 = create(:order_item, quantity: 2, item: item, price: 4)
+      oi3 = create(:order_item, quantity: 3, item: item, price: 3)
+
+      expect(OrderItem.revenue_impact).to eq(9)
+    end
+  end
 end

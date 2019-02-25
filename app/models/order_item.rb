@@ -27,4 +27,12 @@ class OrderItem < ApplicationRecord
       save
     end
   end
+
+  def self.number_of_unfulfilled_orders
+    OrderItem.count("fulfilled = false")
+  end
+
+  def self.revenue_impact
+    OrderItem.where(fulfilled: false).sum(:price).to_f
+  end
 end
