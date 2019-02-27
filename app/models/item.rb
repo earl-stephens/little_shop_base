@@ -53,7 +53,18 @@ class Item < ApplicationRecord
   end
 
   def self.no_default_pics_present?
-    # binding.pry
     Item.where(image: "https://picsum.photos/200/300/?image=524").count == 0
+  end
+
+  def exceeds_inventory?(item)
+    # binding.pry
+    # if OrderItem.first == nil
+    #   false
+    # else
+    #   OrderItem.where(item_id: item.id).first.quantity > item.inventory
+    # end
+    if item.order_items.first
+      item.order_items.first.quantity > item.inventory
+    end
   end
 end

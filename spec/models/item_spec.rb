@@ -120,4 +120,16 @@ RSpec.describe Item, type: :model do
     expect(item_4.ever_ordered?).to eq(false)
     expect(item_5.ever_ordered?).to eq(false)
   end
+
+  it ".exceeds_inventory?" do
+    merchant = create(:merchant)
+    item_1 = create(:item, inventory: 2)
+    item_2 = create(:item, inventory: 4)
+    oi1 = create(:order_item, quantity: 3, item: item_1, price: 5)
+    oi2 = create(:order_item, quantity: 2, item: item_2, price: 4)
+    order = create(:completed_order)
+
+    expect(item_1.exceeds_inventory?(item_1)).to eq(true)
+    expect(item_2.exceeds_inventory?(item_2)).to eq(false)
+  end
 end

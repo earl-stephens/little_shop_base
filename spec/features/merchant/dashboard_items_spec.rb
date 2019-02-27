@@ -463,15 +463,12 @@ describe 'when logged in as a merchant' do
     end
   end
 end
+
 # Merchants should see a statistic about unfulfilled items and the revenue impact.
 # eg, "You have 5 unfulfilled orders worth $752.86"
 describe 'when a logged-in merchant views the dashboard' do
   it 'shows fulfilled and revenue impact stats' do
     merchant = create(:merchant)
-    # items = create_list(:item, 5, user: merchant)
-    # order_1 = create(:order, status: 0)
-    # oi_1 = create(:unfulfilled_order_item, order: order_1, item: items[0..4], price: 8, quantity: 2, created_at: 2.hours.ago, updated_at: 50.minutes.ago)
-    # oi_2 = create(:unfulfilled_order_item, order: order_1, item: items[0..4], price: 8, quantity: 2, created_at: 2.hours.ago, updated_at: 50.minutes.ago)
     item = create(:item, inventory:2)
     oi1 = create(:order_item, quantity: 1, item: item, price: 3)
     oi2 = create(:order_item, quantity: 2, item: item, price: 4)
@@ -480,40 +477,34 @@ describe 'when a logged-in merchant views the dashboard' do
     @am_admin = false
 
     visit dashboard_items_path
-    # save_and_open_page
 
     within ".merch_to_do" do
       expect(page).to have_content("Unfulfilled Orders: 3")
       expect(page).to have_content("Revenue Impact: 12")
     end
-
   end
 
-  xit 'placeholder test setup' do
+# Next to each order on their dashboard, Merchants should
+# see a warning if an item quantity on that order exceeds
+# their current inventory count.
+  it 'shows a warning if order amount exceeds inventory' do
     merchant = create(:merchant)
-    admin = create(:admin)
-
-    item_1 = create(:item, user: merchant)
-    item_2 = create(:item, user: merchant)
-
-    order = create(:completed_order)
+    item_1 = create(:item, inventory: 2, user: merchant)
+    item_2 = create(:item, inventory: 4, user: merchant)
+    oi1 = create(:order_item, quantity: 3, item: item_1, price: 5)
+    oi2 = create(:order_item, quantity: 2, item: item_2, price: 4)
 
     allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
     @am_admin = false
 
     visit dashboard_items_path
 
-    within "#item-#{item_1.id}" do
-      expect(page).to have_content("ID: #{item_1.id}")
-      expect(page).to have_content("Name: #{item_1.name}")
-      expect(page.find("#item-#{item_1.id}-image")['src']).to have_content(item_1.image)
-      expect(page).to have_content("Price: #{number_to_currency(item_1.price)}")
-      expect(page).to have_content("Inventory: #{item_1.inventory}")
+    within("#item-#{item_1.id}") do
+      expect(page).to have_content("WARNING: Order amount exceeds inventory.")
     end
-    within ".merch_to_do" do
-      expect(page).to have_content("To Do List")
 
-      expect(page).to_not have_content("Items with a placeholder image:")
+    within "#item-#{item_2.id}" do
+      expect(page).to_not have_content("WARNING: Order amount exceeds inventory.")
     end
   end
 end

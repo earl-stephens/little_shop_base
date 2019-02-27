@@ -6,25 +6,32 @@
 <a href="<%= item_path(item) %>">
 <img id="item-<%= item.id %>-image" alt="image for <%= item.name %>" src="<%= item.image %>" width="<%= img_width %>" />
 </a>
+
 <p>Price: <%= number_to_currency(item.price) %></p>
 <p>Inventory: <%= item.inventory %></p>
+<% if current_admin? == false %>
+  <% if item.exceeds_inventory?(item) %>
+  <h1><%= "WARNING: Order amount exceeds inventory." %></h1>
+  <% end %>
+<% end %>
+
 
 <p>
 <% if current_admin? %>
-<%= link_to 'Edit Item', edit_admin_merchant_item_path(item.user, item) %>
-<% else %>
-<%= link_to 'Edit Item', edit_dashboard_item_path(item) %>
+  <%= link_to 'Edit Item', edit_admin_merchant_item_path(item.user, item) %>
+  <% else %>
+  <%= link_to 'Edit Item', edit_dashboard_item_path(item) %>
 <% end %>
 </p>
 
 <p><% if item.active %>
-<%= button_to 'Disable Item', dashboard_disable_item_path(item), method: :put %>
-<% else %>
-<%= button_to 'Enable Item', dashboard_enable_item_path(item), method: :put %>
-<% end %>
-<% unless item.ever_ordered? %>
-<%= button_to 'Delete Item', dashboard_item_path(item), method: :delete %>
-<% end %>
+    <%= button_to 'Disable Item', dashboard_disable_item_path(item), method: :put %>
+    <% else %>
+    <%= button_to 'Enable Item', dashboard_enable_item_path(item), method: :put %>
+  <% end %>
+  <% unless item.ever_ordered? %>
+    <%= button_to 'Delete Item', dashboard_item_path(item), method: :delete %>
+  <% end %>
 </p>
 
 <% end %>
